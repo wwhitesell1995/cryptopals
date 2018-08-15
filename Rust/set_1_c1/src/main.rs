@@ -16,7 +16,7 @@ fn output_base64string(base64string: &str)
     }
     else
     {
-      panic!("Error! Result strings didn't match!");
+      println!("Error! Base 64 string {0} didn't match with result!", base64string);
     }
 }
 

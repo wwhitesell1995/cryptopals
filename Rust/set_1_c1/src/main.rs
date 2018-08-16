@@ -2,7 +2,7 @@ mod hex_to_base64;
 
 fn main() {
     let hex_input="49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
-    let base64string=hex_to_base64::hex_to_b64(&hex_input);
+    let base64string=hex_to_base64::encode_bytes(hex_to_base64::decode_hex(&hex_input));
     output_base64string(&base64string)
 }
 

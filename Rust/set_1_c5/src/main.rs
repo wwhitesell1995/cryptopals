@@ -1,7 +1,32 @@
 mod crypto_functions;
+use std::io::{self, Write};
 
 fn main() {
-    println!("Hello World!");
+    let mut input = String::new();
+    let mut key = String::new();
+    println!("Repeating-Key XOR Encryptor \n");
+    print!("Please insert the text you want encrypted: ");
+    io::stdout().flush().unwrap();
+
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line");
+    input = input.trim().to_string();
+
+    print!("\nPlease insert the key you want to encrypt with: ");
+    io::stdout().flush().unwrap();
+
+    io::stdin()
+        .read_line(&mut key)
+        .expect("Failed to read line");
+    key = key.trim().to_string();
+
+    println!("The input text was: {0}", input);
+    println!("The key was: {0}", key);
+    println!(
+        "The resulting encryption from the input and the key was: \n{0}",
+        crypto_functions::get_xor_bytes(&input, &key)
+    );
 }
 
 //Tests the get xor bytes function

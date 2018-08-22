@@ -15,7 +15,7 @@ pub struct XorKeyValue {
 }
 
 //Gets the input of a set of xor bytes with a key.
-pub fn get_xor_output(input_bytes: Vec<u8>, key: &str) -> String {
+pub fn get_xor_output(input_bytes: &[u8], key: &str) -> String {
     let mut xor_output: Vec<u8> = Vec::new();
     let key_bytes = key.as_bytes();
 
@@ -125,9 +125,14 @@ fn read_file_to_string(filename: &str) -> String {
     contents.replace('\n', "")
 }
 
+//Gets the repeating xor key and value from a file
+pub fn get_repeating_xor_key_value_from_file(filename: &str) -> XorKeyValue {
+    let base_64_string = read_file_to_string(filename);
+    get_repeating_xor_key_value(base_64_string)
+}
+
 //Gets the repeating_xor_key from a base 64 encoded string encrypted with a repeating key xor.
-pub fn get_repeating_xor_key_value() -> XorKeyValue {
-    let base_64_string = read_file_to_string("set_1_c6_input.txt");
+pub fn get_repeating_xor_key_value(base_64_string: String) -> XorKeyValue {
     let formatted_base_64_string = format_base64_string(&base_64_string);
     let mut repeating_xor_key = XorKeyValue {
         key: "".to_string(),
@@ -136,18 +141,26 @@ pub fn get_repeating_xor_key_value() -> XorKeyValue {
 
     if formatted_base_64_string.is_ok() {
         let bytes = decoded_base64_to_bytes(&formatted_base_64_string.unwrap());
-        let keysize = get_key_size(&bytes);
-        let blocks = get_blocks(&bytes, keysize);
-        let repeating_xor_key_char_codes = get_max_score_char_codes(&blocks);
-        repeating_xor_key.key = str::from_utf8(&repeating_xor_key_char_codes)
-            .unwrap()
-            .to_string();
-        repeating_xor_key.value = get_xor_output(bytes, &repeating_xor_key.key);
+        repeating_xor_key = get_repeating_xor_key_value_from_bytes(&bytes);
     } else {
         println!("{}", formatted_base_64_string.unwrap());
     }
 
     repeating_xor_key
+}
+
+fn get_repeating_xor_key_value_from_bytes(bytes: &[u8]) -> XorKeyValue {
+    let keysize = get_key_size(&bytes);
+    let blocks = get_blocks(&bytes, keysize);
+    let repeating_xor_key_char_codes = get_max_score_char_codes(&blocks);
+    let str_key = str::from_utf8(&repeating_xor_key_char_codes)
+        .unwrap()
+        .to_string();
+    let str_value = get_xor_output(&bytes, &str_key);
+    XorKeyValue {
+        key: str_key,
+        value: str_value,
+    }
 }
 
 //Gets the keysize of a set of bytes.
